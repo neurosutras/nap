@@ -1,4 +1,5 @@
 from plot_results import *
+from matplotlib import cm
 
 mpl.rcParams['font.size'] = 14.
 
@@ -101,7 +102,6 @@ for section in raw_amplitude:
     for group in raw_amplitude[section]:
         amplification_ratio[section][group] = {}
         values = rec_dict[section][group]['vrest']
-        #sorted_indexes.sort(key=rec_dict[section][group]['vrest'].__getitem__)
         hyper = min(range(len(values)), key=lambda i: abs(values[i]-hyper_vm))
         depol = min(range(len(values)), key=lambda i: abs(values[i] - depol_vm))
         for description in raw_amplitude[section][group]:
@@ -117,7 +117,7 @@ for section in amplification_ratio:
                                                               amplification_ratio[section]['Control'][description]
 
 
-"""
+
 bar_width = 0.8
 ordered_descriptions = ['soma', 'dend', 'spine', 'ais_ina', 'dend_ina', 'i_NMDA']
 ordered_xlabels = ['Soma EPSP', 'Dend EPSP', 'Spine EPSP', 'AIS INa', 'Dend INa', 'INMDA']
@@ -149,10 +149,7 @@ axes[0][1].set_xticklabels(ordered_xlabels, rotation=45, ha='right', fontsize=12
 axes[0][1].tick_params(axis='x', width=0)
 axes[0][1].set_ylabel('Amplification ratio\n(%i mV/%i mV)' % (depol_vm, hyper_vm))
 axes[0][1].set_yscale('log')
-#axes[0][1].set_ylim(0.5, 100.)
 axes[0][1].set_ylim(0.1, 10.)
-#axes[0][1].set_yticks([1, 10, 100])
-#axes[0][1].set_yticklabels([1, 10, 100])
 axes[0][1].set_yticks([1, 10])
 axes[0][1].set_yticklabels([1, 10])
 axes[0][1].set_title('Adjusted Vm: Dend', fontsize=mpl.rcParams['font.size'])
@@ -195,9 +192,8 @@ axes[1][1].axhline(y=1., color='grey', linestyle='--', linewidth=1)
 axes[1][1].set_aspect('auto')
 clean_axes(axes)
 fig.tight_layout()
-plt.show()
-plt.close()
-"""
+fig.show()
+
 
 bar_width = 0.8
 ordered_descriptions = ['soma', 'dend', 'spine', 'soma', 'dend', 'spine']
@@ -237,132 +233,53 @@ axes[1][0].axhline(y=1., color='grey', linestyle='--', linewidth=1)
 axes[1][0].set_aspect('auto')
 clean_axes(axes)
 fig.tight_layout()
-plt.show()
-plt.close()
-
-"""
-
-descriptions = set()
-for section in rec_dict:
-    for group in rec_dict[section]:
-        descriptions.update(rec_dict[section][group]['recs'].keys())
-
-for section in rec_dict:
-    for group in ['Control', 'TTX', 'AP5']:
-        for description in descriptions:
-            if not description in raw_amplitude[section][group]:
-                raw_amplitude[section][group][description] = np.zeros_like(rec_dict[section][group]['vrest'])
-
-ordered_descriptions = ['soma', 'dend', 'spine', 'ais_ina', 'dend_ina', 'i_NMDA']
-ordered_subtitles = ['Soma EPSP', 'Dend EPSP', 'Spine EPSP', 'AIS INa', 'Dend INa', 'INMDA']
-ordered_ylabels = ['EPSP amplitude (mV)', 'EPSP amplitude (mV)', 'EPSP amplitude (mV)', 'Current density (uA/cm2)',
-                   'Current density (uA/cm2)', 'Current amplitude (pA)']
-for section, suptitle in zip(['soma', 'dend'], ['Soma', 'Dend']):
-    fig, axes = plt.subplots(2, 3, figsize=(9, 6), sharex=True)
-    fig.suptitle('Adjusted Vm: %s' % suptitle, fontsize=mpl.rcParams['font.size'])
-    for i, description in enumerate(ordered_descriptions):
-        row = i / 3
-        col = i % 3
-        ymax = 0.
-        for c, group, label in zip(['k', 'r', 'g'], ['Control', 'AP5', 'TTX'], ['Control', 'AP5', 'Low TTX']):
-            indexes = range(len(rec_dict[section][group]['vrest']))
-            indexes.sort(key=rec_dict[section][group]['vrest'].__getitem__)
-            this_vrest = np.array(rec_dict[section][group]['vrest'])[indexes]
-            this_vals = np.array(raw_amplitude[section][group][description])[indexes]
-            if description in ['ais_ina', 'dend_ina', 'i_NMDA']:
-                this_vals *= 1000.
-            ymax = max(ymax, math.ceil(np.max(this_vals) * 1.25))
-            axes[row][col].plot(this_vrest, this_vals, c=c, label=label)
-            axes[row][col].set_ylabel(ordered_ylabels[i])
-            axes[row][col].set_ylim([0., ymax])
-            axes[row][col].set_title(ordered_subtitles[i], fontsize=mpl.rcParams['font.size'])
-        if row == 1:
-            axes[row][col].set_xlabel('Adjusted Vm (mV)')
-            axes[row][col].set_xticks([-65, -62, -59, -56])
-            axes[row][col].set_xticklabels([-65, -62, -59, -56])
-    clean_axes(axes)
-    fig.tight_layout()
-axes[0][0].legend(loc='best', frameon=False, framealpha=0.5)
-plt.show()
-plt.close()
+fig.show()
 
 
-
-for section in raw_amplitude:
-    for description in descriptions:
-        plt.figure()
-        for group in [group for group in raw_amplitude[section] if description in raw_amplitude[section][group]]:
-            plt.scatter(rec_dict[section][group]['vrest'], raw_amplitude[section][group][description], label=group)
-            plt.title('%s_%s' % (section, description))
-        plt.legend(loc='best', frameon=False, framealpha=0.5)
-plt.show()
-plt.close()
-"""
-
-"""
-
-ymin = {}
-ymax = {}
-for rec_type in rec_types:
-    if rec_type in ['soma', 'dend', 'distal_spine']:
-        category = 'vm'
-    elif rec_type in ['soma_ina', 'dend_ina', 'ais_ina']:
-        category = 'ina'
-    else:
-        category = None
-    if category is not None:
-        if category not in ymin:
-            ymin[category] = 0.
-            ymax[category] = 0.
-        for group in rec_dict:
-            if rec_type in rec_dict[group]:
-                for rec in rec_dict[group][rec_type]:
-                    ymin[category] = min(ymin[category], np.min(rec))
-                    ymax[category] = max(ymax[category], np.max(rec))
-"""
-"""
-from matplotlib import cm
 this_cm = cm.get_cmap()
-num_items = len(rec_dict.itervalues().next()['vrest'])
+num_items = len(rec_dict.itervalues().next().itervalues().next()['vrest'])
 colors = [this_cm(1.*i/float(num_items-1)) for i in range(num_items)]
 
-for rec_type in rec_types:
-    fig, axes = plt.subplots(2, 2, sharey=True, sharex=True)
-    for i, group in enumerate([group for group in ['Control', 'TTX', 'AP5', 'AP5 + TTX'] if group in rec_dict]):
-        if group not in sort_indexes:
-            sort_indexes[group] = range(len(rec_dict[group]['vrest']))
-            sort_indexes[group].sort(key=rec_dict[group]['vrest'].__getitem__)
-            sort_indexes[group].reverse()
-            rec_dict[group]['vrest'] = map(rec_dict[group]['vrest'].__getitem__, sort_indexes[group])
-        if rec_type in rec_dict[group]:
-            row = i / 2
-            col = i % 2
-            axes[row][col].set_title(group)
-            rec_dict[group][rec_type] = map(rec_dict[group][rec_type].__getitem__, sort_indexes[group])
-            for j, vrest in enumerate(rec_dict[group]['vrest']):
-                if group == 'Control':
-                    axes[row][col].plot(offset_t, rec_dict[group][rec_type][j], color=colors[j],
-                                        label='%.1f mV' % vrest)
-                else:
-                    axes[row][col].plot(offset_t, rec_dict[group][rec_type][j], color=colors[j])
-    if rec_type in ['soma', 'dend', 'distal_spine']:
-        # category = 'vm'
-        axes[0][0].set_ylabel('EPSP amp (mV)')
-        # plt.ylim(ymin[category], ymax[category])
-        plt.suptitle(rec_type+'_Vm')
-    elif rec_type in ['soma_ina', 'dend_ina', 'ais_ina']:
-        # category = 'ina'
-        axes[0][0].set_ylabel('Current (mA/cm2)')
-        # plt.ylim(ymin[category], ymax[category])
-        plt.suptitle(rec_type)
-    else:
-        axes[0][0].set_ylabel('Current (nA)')
-        plt.suptitle(rec_type)
-    axes[0][0].legend(loc='best', frameon=False, framealpha=0.5)
-    axes[1][0].set_xlabel('Time (ms)')
-    clean_axes(axes)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.85, hspace=0.5, wspace=0.2)
-plt.show()
-plt.close()
-"""
+ordered_descriptions = ['soma', 'dend', 'spine', 'soma_ina', 'ais_ina', 'dend_ina', 'i_NMDA']
+ordered_subtitles = ['Soma EPSP', 'Dend EPSP', 'Spine EPSP', 'Soma INa', 'AIS INa', 'Dend INa', 'INMDA']
+
+for section, legend_title in zip(['soma', 'dend'], ['Soma Vm (mV)', 'Dend Vm (mV)']):
+    sort_indexes = dict()
+    for rec_type, subtitle in zip(ordered_descriptions, ordered_subtitles):
+        fig, axes = plt.subplots(2, 2, sharey=True, sharex=True)
+        for i, group in enumerate([group for group in ['Control', 'TTX', 'AP5', 'AP5 + TTX']
+                                   if group in rec_dict[section]]):
+            if group not in sort_indexes:
+                sort_indexes[group] = range(len(rec_dict[section][group]['vrest']))
+                sort_indexes[group].sort(key=rec_dict[section][group]['vrest'].__getitem__)
+                sort_indexes[group].reverse()
+                rec_dict[section][group]['vrest'] = map(rec_dict[section][group]['vrest'].__getitem__,
+                                                        sort_indexes[group])
+            if rec_type in rec_dict[section][group]['recs']:
+                row = i / 2
+                col = i % 2
+                axes[row][col].set_title(group)
+                rec_dict[section][group]['recs'][rec_type] = map(rec_dict[section][group]['recs'][rec_type].__getitem__,
+                                                                 sort_indexes[group])
+                for j, vrest in enumerate(rec_dict[section][group]['vrest']):
+                    if group == 'Control':
+                        axes[row][col].plot(offset_t, rec_dict[section][group]['recs'][rec_type][j], color=colors[j],
+                                            label='%.1f mV' % vrest)
+                    else:
+                        axes[row][col].plot(offset_t, rec_dict[section][group]['recs'][rec_type][j], color=colors[j])
+        if rec_type in ['soma', 'dend', 'spine']:
+            axes[0][0].set_ylabel('EPSP amp (mV)')
+            fig.suptitle(subtitle)
+        elif rec_type in ['soma_ina', 'dend_ina', 'ais_ina']:
+            axes[0][0].set_ylabel('Current (mA/cm2)')
+            fig.suptitle(subtitle)
+        else:
+            axes[0][0].set_ylabel('Current (nA)')
+            fig.suptitle(subtitle)
+        handles, labels = axes[0][0].get_legend_handles_labels()
+        axes[1][0].set_xlabel('Time (ms)')
+        clean_axes(axes)
+        fig.tight_layout()
+        fig.subplots_adjust(top=0.85, hspace=0.5, wspace=0.2, right=0.7)
+        fig.legend(handles, labels, title=legend_title, loc=(0.75, 0.4), frameon=False, framealpha=0.5)
+        fig.show()
