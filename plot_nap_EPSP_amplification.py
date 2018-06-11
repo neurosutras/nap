@@ -283,3 +283,5 @@ for section, legend_title in zip(['soma', 'dend'], ['Soma Vm (mV)', 'Dend Vm (mV
         fig.subplots_adjust(top=0.85, hspace=0.5, wspace=0.2, right=0.7)
         fig.legend(handles, labels, title=legend_title, loc=(0.75, 0.4), frameon=False, framealpha=0.5)
         fig.show()
+plt.show()
+plt.close()
