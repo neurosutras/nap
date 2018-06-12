@@ -14,7 +14,7 @@ Running these simulations requires:
 
 3) open-source python modules: numpy, matplotlib, h5py, click, btmorph
  
-For additional installation details, please refer to [install notes.txt](nap/install notes.txt)
+For additional installation details, please refer to [install notes.txt](https://github.com/neurosutras/nap/blob/master/install%20notes.txt)
  
 Usage:
  
