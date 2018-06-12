@@ -6,6 +6,7 @@ This repository contains the code used to simulate the full biophysically detail
 Hsu CL, Zhao X, Milstein AD, Spruston N. (2018) Persistent sodium current mediates the steep voltage dependence of spatial coding in 
 hippocampal pyramidal neurons. Neuron 99, 1–16
  
+
 Running these simulations requires:
 
 1) NEURON - freely available from http://neuron.yale.edu
@@ -16,6 +17,7 @@ Running these simulations requires:
  
 For additional installation details, please refer to [install notes.txt](https://github.com/neurosutras/nap/blob/master/install%20notes.txt)
  
+
 Usage:
  
 Compile the .mod files (nrnivmodl on unix/linux/osx or mknrndll on mswin).
