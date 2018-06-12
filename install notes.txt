@@ -1,0 +1,119 @@
+I) To install on a local machine:
+
+1) install anaconda python, includes ipython, numpy, matplotlib
+
+2) clone neuron github repositories:
+mkdir ~/neuron
+cd ~/neuron
+git clone https://github.com/neuronsimulator/nrn.git
+cd nrn
+./build.sh
+cd ..
+git clone https://github.com/neuronsimulator/iv.git
+cd iv
+./build.sh
+
+Install following tips from:
+
+http://www.neuron.yale.edu/neuron/download/compilestd_osx
+
+http://www.neuron.yale.edu/phpBB/viewtopic.php?f=4&t=3051#p12584
+
+http://www.neuron.yale.edu/neuron/download/compile_linux
+
+3) Install btmorph from
+
+http://btmorph.readthedocs.org/en/latest/readme.html#installation
+
+4) Make sure ~/neuron/nrnenv includes:
+
+export IDIR=$HOME/neuron
+export IV=$IDIR/iv
+export N=$IDIR/nrn
+export CPU=x86_64
+export PATH=$IV/$CPU/bin:$N/$CPU/bin:$PATH
+
+and ~/.bash_profile includes:
+
+export PATH=$HOME/anaconda/bin:$PATH
+export PATH=$HOME/local/bin:$PATH
+source $HOME/neuron/nrnenv
+export PATH=$HOME/neuron:$PATH
+export PYTHONPATH=$HOME/neuron/nrn/lib/python:$PYTHONPATH
+export PYTHONPATH=$HOME/python_modules/btmorph:$PYTHONPATH
+
+
+5) If error related to libreadline.6.2.dylib :
+
+cd ~/neuron/nrn/lib/python/neuron/
+install_name_tool -change libreadline.6.2.dylib $HOME/anaconda2/lib/libreadline.6.2.dylib hoc.so
+
+
+6) On a linux cluster, may need to set the default backend for matplotlib to 'Agg' in the matplotlibrc file so that
+importing pyplot doesn't cause errors in a system without display capability.
+
+Original config file should be in site-packages/matplotlib/mpl-data/matplotlibrc
+Copy it to $HOME/.config/matplotlib/matplotlibrc, then change the backend to 'Agg'.
+
+On my mac, I have to manually edit matplotlibrc in site-packages/matplotlib/mpl-data to
+'Qt5Agg' every time I update anaconda.
+
+
+7) To run NEURON simulations, make sure to execute nrnivmodl in the directory that contains the .mod and .py files.
+Make sure to put .swc files in the /morphologies directory and expect to find .pkl and .hdf5 data output files in the
+/data directory
+
+Then start an iPython session with: ipython
+
+and execute pieces of the similation with:
+run name_of_py_file
+
+build your own cell with
+
+from specify_cells import *
+
+cell = HocCell()
+cell.make_section('soma')
+
+You can also import a morphology from an .swc file:
+
+cell = HocCell('str_with_name_of_swc_file.swc')
+
+BtMorph requires that the compartments with indices 1, 2, and 3 all be of type 1 (soma), according to the standard used
+by NeuroMorpho.org . My model expects compartment types to be labeled as follows
+(1 = soma, 2 = axon, 3 = basal, 4 = apical, 5 = trunk, 6 = tuft).
+Soma and axon compartments are discarded and replaced with a simplified representation of soma and axon.
+
+Ion channel mechanisms and cable parameters for various types of compartments can be inserted with commands like:
+
+cell.modify_mech_param('soma', 'cable', 'Ra', 150.)
+cell.modify_mech_param('soma', 'pas', 'g', 0.0002)
+cell.modify_mech_param('basal', 'h', 'ghbar', origin='soma')
+cell.modify_mech_param(sec_type, 'kap', 'gkabar', origin='soma', slope=3.84e-4, max=0.24)
+
+Once you have a cell appropriately specified, you can save a file containing the mechanisms with:
+
+cell.export_mech_dict('str_with_name_of_pkl_file.pkl'), or with no arg to automatically generate a unique filename with
+the data and timestamp.
+
+Then a cell can be instantiated with a mech_dict file:
+
+cell = HocCell('str_with_name_of_swc_file.swc', 'str_with_name_of_pkl_file.pkl')
+
+plot functions can be executed following:
+from plot_results import *
+
+A quick simulation using adaptive timestep integration can be run with:
+
+sim = QuickSim(duration)
+sim.append_rec(cell, cell.tree.root, loc=0.5, description='soma')
+sim.run()
+sim.plot()
+
+or
+
+sim.export_to_file(name_of_hdf5_object, index_of_similation_in_file)
+
+then calling a plot function on the output file:
+
+plot_superimpose_conditions('str_with_name_of_output_file') # no suffix necessary
