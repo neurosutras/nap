@@ -1,10 +1,31 @@
 from plot_results import *
 from matplotlib import cm
 
-mpl.rcParams['font.size'] = 14.
 
-output_file_paths = {'soma': 'data/07162017_nap_amplification_DC_soma_stim_trunk.hdf5',
-                     'dend': 'data/07162017_nap_amplification_DC_dend_stim_trunk.hdf5'}
+output_file_paths = dict()
+
+if len(sys.argv) > 1:
+    output_file_paths['soma'] = str(sys.argv[1])
+    if not os.path.isfile(output_file_paths['soma']):
+        raise IOError('file containing data for nap_EPSP_amplification_DC_soma_stim_trunk not found at provided path: '
+                      '%s' % output_file_paths['soma'])
+else:
+    output_file_paths['soma'] = 'data/07162017_nap_amplification_DC_soma_stim_trunk.hdf5'
+    if not os.path.isfile(output_file_paths['soma']):
+        raise IOError('default file containing data for nap_EPSP_amplification_DC_soma_stim_trunk not found: %s' %
+                      output_file_paths['soma'])
+if len(sys.argv) > 2:
+    output_file_paths['dend'] = str(sys.argv[2])
+    if not os.path.isfile(output_file_paths['dend']):
+        raise IOError('file containing data for nap_EPSP_amplification_DC_dend_stim_trunk not found at provided path: '
+                      '%s' % output_file_paths['dend'])
+else:
+    output_file_paths['dend'] = 'data/07162017_nap_amplification_DC_dend_stim_trunk.hdf5'
+    if not os.path.isfile(output_file_paths['dend']):
+        raise IOError('default file containing data for nap_EPSP_amplification_DC_dend_stim_trunk not found: %s' %
+                      output_file_paths['soma'])
+
+mpl.rcParams['font.size'] = 14.
 
 rec_dict = {}
 syn_counter = {}

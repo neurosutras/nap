@@ -1,9 +1,18 @@
 from plot_results import *
 
 
-mpl.rcParams['font.size'] = 14.
+if len(sys.argv) > 1:
+    output_file_path = str(sys.argv[1])
+    if not os.path.isfile(output_file_path):
+        raise IOError('file containing data for nap_EPSP_amplification_IO not found at provided path: %s' %
+                      output_file_path)
+else:
+    output_file_path = 'data/08112017_nap_amplification_IO_DC_soma_stim_trunk.hdf5'
+    if not os.path.isfile(output_file_path):
+        raise IOError('default file containing data for nap_EPSP_amplification_IO not found: %s' %
+                      output_file_path)
 
-output_file_path = 'data/08112017_nap_amplification_IO_DC_soma_stim_trunk.hdf5'
+mpl.rcParams['font.size'] = 14.
 
 rec_dict = {}
 baseline = 10.  # ms

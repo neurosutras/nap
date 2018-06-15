@@ -1,8 +1,17 @@
 from plot_results import *
 
 
-output_filepath = 'data/20180220_nap_EPSC_amplification_soma.hdf5'
-# output_filepath = 'data/20180222_nap_EPSC_amplification_soma.hdf5'
+if len(sys.argv) > 1:
+    output_filepath = str(sys.argv[1])
+    if not os.path.isfile(output_filepath):
+        raise IOError('file containing data for nap_EPSC_amplification_soma not found at provided path: %s' %
+                      output_filepath)
+else:
+    output_filepath = 'data/20180220_nap_EPSC_amplification_soma.hdf5'
+    # output_filepath = 'data/20180222_nap_EPSC_amplification_soma.hdf5'
+    if not os.path.isfile(output_filepath):
+        raise IOError('default file containing data for nap_EPSC_amplification_soma not found: %s' %
+                      output_filepath)
 
 rec_dict = {}
 
