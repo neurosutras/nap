@@ -38,20 +38,18 @@ run simulate_nap_EPSC_amplification --section=soma --output-file-path=data/examp
 
 To export a series of simulations across a range of input parameters, execute the bash scripts:
 
-./batch_nap_EPSC_amplification.sh  # generates one .hdf5 file in the /data directory
+./batch_nap_EPSC_amplification.sh  # generates one .hdf5 file in the data directory
 
-./batch_nap_EPSP_amplification.sh  # generates two .hdf5 files in the /data directory, one with resting Vm controlled at the soma, and one with resting Vm controlled in the dendrite
+./batch_nap_EPSP_amplification.sh  # generates two .hdf5 files in the data directory, one with resting Vm controlled at the soma, and one with resting Vm controlled in the dendrite
 
-./batch_nap_EPSP_amplification_IO.sh  # generates one .hdf5 file in the /data directory
+./batch_nap_EPSP_amplification_IO.sh  # generates one .hdf5 file in the data directory
 
 
 This exports a set of simulation output data to an .hdf5 file. Then, a set of plot scripts can be executed to reproduce figures
-from the paper. These scripts require the above generated .hdf5 files to be provided via the command line, for example:
+from the paper. These scripts require the paths to the above generated .hdf5 files to be provided via the command line, for example:
 
-ipython
+python plot_nap_EPSC_amplification data/20180220_nap_EPSC_amplification_soma.hdf5  # generates plots similar to Figure S5
 
-run plot_nap_EPSC_amplification data/20180220_nap_EPSC_amplification_soma.hdf5  # generates plots similar to Figure S5
+python plot_nap_EPSP_amplification data/07162017_nap_amplification_DC_soma_stim_trunk.hdf5 data/07162017_nap_amplification_DC_dend_stim_trunk.hdf5  # generates plots similar to Figure 5C and S4 
 
-run plot_nap_EPSP_amplification data/07162017_nap_amplification_DC_soma_stim_trunk.hdf5 data/07162017_nap_amplification_DC_dend_stim_trunk.hdf5  # generates plots similar to Figure 5C and S4 
-
-run plot_nap_EPSP_amplification_IO data/08112017_nap_amplification_IO_DC_soma_stim_trunk.hdf5  # generates plots similar to Figure 6B
+python plot_nap_EPSP_amplification_IO data/08112017_nap_amplification_IO_DC_soma_stim_trunk.hdf5  # generates plots similar to Figure 6B
